@@ -11,25 +11,19 @@ import random
 countries_of_presence = [Faker().country_code() for _ in range(10)]
 countries_of_presence.append('CA')
 def generate_articles (n):
-
-
     f= Faker()
-
     article_names = string.ascii_uppercase
-    
     articles_countries = []
 
     for name in article_names:
         desc = f.paragraph()
         for c_code in countries_of_presence:
-            articles_countries.append([name, c_code, pycountry.countries.get(alpha_2=c_code).name, desc ])
-
+            articles_countries.append([name, c_code, pycountry.countries.get(alpha_2=c_code).name, desc])
+            
     unique_indicies = [_+1 for _ in range(len(articles_countries))]
-    ids_countries = {
-        unique_indicies[_]:articles_countries[_] for _ in range(len(unique_indicies))
-    }
+    ids_countries = {unique_indicies[_]:articles_countries[_] for _ in range(len(unique_indicies))}
 
-    test = []
+    records = []
 
     for _ in range(n):
         record = {}
@@ -44,9 +38,9 @@ def generate_articles (n):
             end_date = dt(2023,6,6,0,0,0) ).strftime("%Y-%m-%d %H:%M:%S")
         record['price'] = round(random.uniform(1, 100), 2)
         record['valid_to'] = dt(9999,12,31,23,59,59).strftime("%Y-%m-%d %H:%M:%S")
-        test.append(record)
+        records.append(record)
         
-    d = pd.DataFrame(test)
+    d = pd.DataFrame(records)
 
     df = d.sort_values(['name', 'country_code', 'valid_from']).copy().reset_index(drop=True)
     df['key'] = df.index+1
@@ -58,9 +52,9 @@ def generate_articles (n):
 
     return df
 
+
 def generate_clients (n):
     f= Faker()
-
     ids = [f.unique.pyint(min_value=1, max_value=9999) for _ in range(n)]
     country_codes  = [random.choice(countries_of_presence) for _ in range(n)]
     country_names  = [pycountry.countries.get(alpha_2=cc).name for cc in country_codes]
@@ -152,16 +146,12 @@ def gen_data(n_c, n_a, n_t):
     clients=clients.loc[:, ['key', 'client_id', 'fname', 'lname', 'country_code',	'country_name',	'city',	'address']]
     articles = articles.loc[:, ['key', 'article_id', 'name', 'country_code', 'country_name', 'description', 'price', 'valid_from',	'valid_to']]
     transactions = transactions.loc[:, ['id', 'datetime', 'client_id', 'client_key', 'article_id', 'article_key', 'amount']]
-    
-    # clients.to_csv('GeneratedData/clients.csv', index=False, header=True, sep='\t')
-    # articles.to_csv('GeneratedData/articles.csv', index=False, header=True, sep='\t')
-    # transactions.to_csv('GeneratedData/transactions.csv', index=False, header=True, sep='\t')
+
     clients.to_csv(outdir + r'\clients.csv', index=False, header=True, sep='\t')
     articles.to_csv(outdir + r'\articles.csv', index=False, header=True, sep='\t')
     transactions.to_csv(outdir + r'\transactions.csv', index=False, header=True, sep='\t')
 
     return clients, articles, transactions
-
 
 
 
