@@ -10,6 +10,7 @@ import random
 
 countries_of_presence = [Faker().country_code() for _ in range(10)]
 countries_of_presence.append('CA')
+
 def generate_articles (n):
     f= Faker()
     article_names = string.ascii_uppercase
